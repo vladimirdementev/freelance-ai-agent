@@ -1,30 +1,32 @@
 # Freelance AI Agent
 
-MVP backend for finding freelance orders, classifying them, scoring the best opportunities, and sending top matches to Telegram.
+MVP backend для поиска фриланс-заказов, их классификации, расчета привлекательности и отправки лучших вариантов в Telegram.
 
-The first version is intentionally narrow:
+Первая версия специально сделана узкой. Она умеет:
 
-1. collect orders from one source boundary;
-2. normalize and save them to PostgreSQL;
-3. classify each order with OpenAI when configured, otherwise with a deterministic fallback classifier;
-4. calculate a score;
-5. notify Telegram when a project crosses the configured score threshold.
+1. получать заказы из одного источника или парсерного слоя;
+2. приводить заказ к единому формату;
+3. сохранять заказы в PostgreSQL;
+4. классифицировать заказ через OpenAI, если задан API-ключ;
+5. использовать локальный эвристический классификатор, если OpenAI не настроен;
+6. рассчитывать score заказа;
+7. отправлять Telegram-уведомление, если заказ проходит заданный порог.
 
-No automatic proposal sending, CRM, mobile app, or AI coding agent is included in this MVP.
+В MVP пока нет автоматической отправки откликов, CRM, мобильного приложения и AI coding agent. Сначала нужно проверить, что система стабильно находит выгодные заказы.
 
-## Architecture
+## Архитектура
 
 ```text
-Kwork/feed or parser
+Kwork feed / parser
   -> /api/projects/ingest
   -> PostgreSQL
-  -> AI/heuristic classifier
+  -> AI / heuristic classifier
   -> scoring engine
   -> top projects API
   -> Telegram notification
 ```
 
-## Tech stack
+## Технологии
 
 - Java 21
 - Spring Boot 4.1
@@ -33,28 +35,28 @@ Kwork/feed or parser
 - Maven
 - Docker Compose
 
-## Run locally
+## Локальный запуск
 
 ```bash
 docker compose up --build
 ```
 
-Optional environment variables:
+Опциональные переменные окружения:
 
-| Variable | Purpose | Default |
+| Переменная | Назначение | Значение по умолчанию |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | Enables OpenAI classification | empty |
-| `OPENAI_MODEL` | OpenAI model name | `gpt-4.1-mini` |
-| `TELEGRAM_BOT_TOKEN` | Telegram bot token | empty |
-| `TELEGRAM_CHAT_ID` | Telegram chat id | empty |
-| `TARGET_HOURLY_RATE` | RUB/hour target for price/time scoring | `1500` |
-| `MIN_NOTIFICATION_SCORE` | Minimum score for Telegram notification | `80` |
-| `COLLECTORS_ENABLED` | Enables scheduled collectors | `false` |
-| `KWORK_FEED_URL` | URL for a normalized Kwork JSON feed | empty |
+| `OPENAI_API_KEY` | Включает классификацию через OpenAI | пусто |
+| `OPENAI_MODEL` | Модель OpenAI | `gpt-4.1-mini` |
+| `TELEGRAM_BOT_TOKEN` | Токен Telegram-бота | пусто |
+| `TELEGRAM_CHAT_ID` | ID Telegram-чата для уведомлений | пусто |
+| `TARGET_HOURLY_RATE` | Целевая ставка в рублях в час для score | `1500` |
+| `MIN_NOTIFICATION_SCORE` | Минимальный score для Telegram-уведомления | `80` |
+| `COLLECTORS_ENABLED` | Включает scheduled collectors | `false` |
+| `KWORK_FEED_URL` | URL нормализованного JSON-фида Kwork | пусто |
 
 ## API
 
-### Ingest one normalized project
+### Загрузить один нормализованный заказ
 
 ```bash
 curl -X POST http://localhost:8080/api/projects/ingest \
@@ -69,15 +71,15 @@ curl -X POST http://localhost:8080/api/projects/ingest \
   }'
 ```
 
-### Get top projects
+### Получить топ заказов
 
 ```bash
 curl 'http://localhost:8080/api/projects/top?limit=10'
 ```
 
-## Collector feed format
+## Формат фида для collector
 
-The first collector expects a normalized JSON feed so the parsing boundary can evolve independently from analysis and scoring:
+Первый collector ожидает нормализованный JSON-фид. Это позволяет отдельно развивать реальный парсер площадки, не меняя downstream-часть: базу, AI-анализ, scoring и Telegram.
 
 ```json
 {
@@ -93,9 +95,9 @@ The first collector expects a normalized JSON feed so the parsing boundary can e
 }
 ```
 
-An array with the same item shape is also accepted.
+Также поддерживается JSON-массив с такой же структурой элементов.
 
-## Scoring formula
+## Формула scoring
 
 ```text
 score =
@@ -106,13 +108,16 @@ score =
   + 10% * win probability
 ```
 
-`price/time` is normalized by `TARGET_HOURLY_RATE`. `win probability` is a conservative derived score based on skill match, automation, simplicity, and risk.
+`price/time` нормализуется относительно `TARGET_HOURLY_RATE`.
 
-## Next product milestones
+`win probability` — консервативная производная оценка на основе соответствия навыкам, автоматизируемости, простоты и риска.
 
-1. Collect 200-500 real orders from Kwork and Freelance.ru.
-2. Analyze repeated project types and choose three niches.
-3. Build three small portfolio projects.
-4. Replace the normalized feed collector with real platform adapters.
-5. Add proposal generation after the scoring quality is validated.
-6. Record outcomes for every order to improve future scoring.
+## Следующие продуктовые шаги
+
+1. Собрать 200-500 реальных заказов с Kwork и Freelance.ru.
+2. Проанализировать повторяющиеся типы проектов.
+3. Выбрать три основные ниши.
+4. Сделать три небольших portfolio projects под выбранные ниши.
+5. Заменить normalized feed collector на реальные адаптеры площадок.
+6. Добавить генерацию откликов только после проверки качества scoring.
+7. Сохранять результаты по каждому заказу: откликнулись или нет, получили заказ или нет, сколько часов заняло выполнение, сколько заработали.
