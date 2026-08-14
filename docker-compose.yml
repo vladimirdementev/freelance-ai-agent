@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: freelance_ai
+      POSTGRES_USER: freelance_ai
+      POSTGRES_PASSWORD: freelance_ai
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U freelance_ai -d freelance_ai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/freelance_ai
+      DATABASE_USERNAME: freelance_ai
+      DATABASE_PASSWORD: freelance_ai
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      COLLECTORS_ENABLED: ${COLLECTORS_ENABLED:-false}
+      KWORK_FEED_URL: ${KWORK_FEED_URL:-}
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres-data:
