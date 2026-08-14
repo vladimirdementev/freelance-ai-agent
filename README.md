@@ -10,7 +10,8 @@ MVP backend для поиска фриланс-заказов, их класси
 4. классифицировать заказ через OpenAI, если задан API-ключ;
 5. использовать локальный эвристический классификатор, если OpenAI не настроен;
 6. рассчитывать score заказа;
-7. отправлять Telegram-уведомление, если заказ проходит заданный порог.
+7. отправлять Telegram-уведомление, если заказ проходит заданный порог;
+8. не отправлять повторные уведомления по уже уведомленным заказам.
 
 В MVP пока нет автоматической отправки откликов, CRM, мобильного приложения и AI coding agent. Сначала нужно проверить, что система стабильно находит выгодные заказы.
 
@@ -68,7 +69,9 @@ curl -X POST http://localhost:8080/api/projects/ingest \
     "title": "Telegram bot with payments",
     "description": "Need a Telegram bot with catalog, PostgreSQL, payment API and admin notifications.",
     "price": 18000,
-    "publishedAt": "2026-08-14T10:00:00Z"
+    "publishedAt": "2026-08-14T10:00:00Z",
+    "sourceUrl": "https://example.com/orders/kwork-123",
+    "sourceCategory": "Telegram bots"
   }'
 ```
 
@@ -76,6 +79,22 @@ curl -X POST http://localhost:8080/api/projects/ingest \
 
 ```bash
 curl 'http://localhost:8080/api/projects/top?limit=10'
+```
+
+### Запустить collectors вручную
+
+```bash
+curl -X POST http://localhost:8080/api/collectors/run
+```
+
+Ответ показывает, сколько заказов найдено, сохранено и сколько упало при обработке:
+
+```json
+{
+  "collected": 25,
+  "ingested": 25,
+  "failed": 0
+}
 ```
 
 ## FL.ru collector
@@ -103,6 +122,8 @@ RSS item
 ```bash
 COLLECTORS_ENABLED=true docker compose up --build
 ```
+
+Повторные уведомления не отправляются: после успешной отправки Telegram-сообщения у заказа заполняется `notifiedAt`.
 
 ## Формат фида для Kwork collector
 

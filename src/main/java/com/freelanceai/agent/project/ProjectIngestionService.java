@@ -43,6 +43,8 @@ public class ProjectIngestionService {
         project.setDescription(request.description());
         project.setPrice(request.price());
         project.setPublishedAt(request.publishedAt() == null ? Instant.now() : request.publishedAt());
+        project.setSourceUrl(request.sourceUrl());
+        project.setSourceCategory(request.sourceCategory());
 
         ProjectAnalysis analysis = analysisService.analyze(request.title(), request.description(), request.price());
         project.setCategory(analysis.category());
@@ -55,7 +57,9 @@ public class ProjectIngestionService {
         project.setScore(scoringService.score(analysis, request.price()));
 
         FreelanceProject saved = projectRepository.save(project);
-        telegramNotifier.notifyIfTopProject(saved);
+        if (saved.getNotifiedAt() == null && telegramNotifier.notifyIfTopProject(saved)) {
+            saved.setNotifiedAt(Instant.now());
+        }
         return saved;
     }
 }

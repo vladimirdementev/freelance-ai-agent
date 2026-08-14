@@ -51,6 +51,12 @@ public class FreelanceProject {
     @Column(name = "published_at")
     private Instant publishedAt;
 
+    @Column(name = "source_url", length = 1000)
+    private String sourceUrl;
+
+    @Column(name = "source_category", length = 300)
+    private String sourceCategory;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 40)
     private ProjectCategory category = ProjectCategory.OTHER;
@@ -78,6 +84,9 @@ public class FreelanceProject {
 
     @Column(nullable = false, precision = 5, scale = 2)
     private BigDecimal score = BigDecimal.ZERO;
+
+    @Column(name = "notified_at")
+    private Instant notifiedAt;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -149,6 +158,22 @@ public class FreelanceProject {
         this.publishedAt = publishedAt;
     }
 
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
+    }
+
+    public String getSourceCategory() {
+        return sourceCategory;
+    }
+
+    public void setSourceCategory(String sourceCategory) {
+        this.sourceCategory = sourceCategory;
+    }
+
     public ProjectCategory getCategory() {
         return category;
     }
@@ -211,5 +236,13 @@ public class FreelanceProject {
 
     public void setScore(BigDecimal score) {
         this.score = score;
+    }
+
+    public Instant getNotifiedAt() {
+        return notifiedAt;
+    }
+
+    public void setNotifiedAt(Instant notifiedAt) {
+        this.notifiedAt = notifiedAt;
     }
 }

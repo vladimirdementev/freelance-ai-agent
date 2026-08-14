@@ -13,6 +13,8 @@ public record ProjectIngestRequest(
         @NotBlank String title,
         @NotBlank String description,
         @PositiveOrZero BigDecimal price,
-        Instant publishedAt
+        Instant publishedAt,
+        String sourceUrl,
+        String sourceCategory
 ) {
 }

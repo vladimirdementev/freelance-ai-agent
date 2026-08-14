@@ -12,6 +12,8 @@ public record ProjectResponse(
         String description,
         BigDecimal price,
         Instant publishedAt,
+        String sourceUrl,
+        String sourceCategory,
         ProjectCategory category,
         ProjectComplexity complexity,
         Set<String> technologies,
@@ -19,7 +21,8 @@ public record ProjectResponse(
         Integer automationPercent,
         Integer skillMatchPercent,
         Integer riskPercent,
-        BigDecimal score
+        BigDecimal score,
+        Instant notifiedAt
 ) {
 
     public static ProjectResponse from(FreelanceProject project) {
@@ -31,6 +34,8 @@ public record ProjectResponse(
                 project.getDescription(),
                 project.getPrice(),
                 project.getPublishedAt(),
+                project.getSourceUrl(),
+                project.getSourceCategory(),
                 project.getCategory(),
                 project.getComplexity(),
                 project.getTechnologies(),
@@ -38,7 +43,8 @@ public record ProjectResponse(
                 project.getAutomationPercent(),
                 project.getSkillMatchPercent(),
                 project.getRiskPercent(),
-                project.getScore()
+                project.getScore(),
+                project.getNotifiedAt()
         );
     }
 }

@@ -66,7 +66,9 @@ public class KworkFeedCollector implements ProjectCollector {
                         item.path("title").asText(),
                         item.path("description").asText(),
                         parsePrice(item.path("price")),
-                        parseInstant(item.path("publishedAt").asText(null))
+                        parseInstant(item.path("publishedAt").asText(null)),
+                        item.path("sourceUrl").asText(null),
+                        item.path("sourceCategory").asText(null)
                 ));
             }
             return projects;

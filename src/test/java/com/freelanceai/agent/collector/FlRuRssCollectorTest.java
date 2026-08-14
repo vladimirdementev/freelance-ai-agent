@@ -45,6 +45,8 @@ class FlRuRssCollectorTest {
                     assertThat(project.description()).contains("Требуется тестировщик");
                     assertThat(project.price()).isEqualByComparingTo(BigDecimal.valueOf(50_000));
                     assertThat(project.publishedAt()).isEqualTo(Instant.parse("2026-08-14T11:50:03Z"));
+                    assertThat(project.sourceUrl()).isEqualTo("https://www.fl.ru/projects/5517886/testirovanie-prilojeniya.html");
+                    assertThat(project.sourceCategory()).isEqualTo("Разработка / Тестирование");
                 });
     }
 }

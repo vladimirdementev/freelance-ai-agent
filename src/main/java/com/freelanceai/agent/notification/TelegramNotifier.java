@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.client.RestClient;
 
 import com.freelanceai.agent.config.FreelanceAiProperties;
@@ -25,13 +26,13 @@ public class TelegramNotifier {
         this.restClient = restClientBuilder.build();
     }
 
-    public void notifyIfTopProject(FreelanceProject project) {
+    public boolean notifyIfTopProject(FreelanceProject project) {
         if (!isConfigured() || project.getScore() == null) {
-            return;
+            return false;
         }
         BigDecimal threshold = BigDecimal.valueOf(properties.getScoring().getMinNotificationScore());
         if (project.getScore().compareTo(threshold) < 0) {
-            return;
+            return false;
         }
 
         try {
@@ -44,8 +45,10 @@ public class TelegramNotifier {
                     ))
                     .retrieve()
                     .toBodilessEntity();
+            return true;
         } catch (RuntimeException e) {
             log.warn("Failed to send Telegram notification for project {}", project.getExternalId(), e);
+            return false;
         }
     }
 
@@ -60,6 +63,7 @@ public class TelegramNotifier {
 
                 <b>%s</b>
                 Platform: %s
+                Source category: %s
                 Price: %s RUB
                 Score: %s
 
@@ -71,9 +75,11 @@ public class TelegramNotifier {
                 Risk: %s%%
 
                 Technologies: %s
+                %s
                 """.formatted(
-                project.getTitle(),
+                escape(project.getTitle()),
                 project.getPlatform(),
+                escape(project.getSourceCategory() == null ? "-" : project.getSourceCategory()),
                 project.getPrice() == null ? "not specified" : project.getPrice().stripTrailingZeros().toPlainString(),
                 project.getScore(),
                 project.getCategory(),
@@ -82,7 +88,19 @@ public class TelegramNotifier {
                 project.getAutomationPercent(),
                 project.getSkillMatchPercent(),
                 project.getRiskPercent(),
-                project.getTechnologies().isEmpty() ? "-" : String.join(", ", project.getTechnologies())
+                escape(project.getTechnologies().isEmpty() ? "-" : String.join(", ", project.getTechnologies())),
+                sourceLink(project)
         );
+    }
+
+    private String sourceLink(FreelanceProject project) {
+        if (!StringUtils.hasText(project.getSourceUrl())) {
+            return "";
+        }
+        return "\n<a href=\"%s\">Open project</a>".formatted(escape(project.getSourceUrl()));
+    }
+
+    private String escape(String value) {
+        return HtmlUtils.htmlEscape(value);
     }
 }

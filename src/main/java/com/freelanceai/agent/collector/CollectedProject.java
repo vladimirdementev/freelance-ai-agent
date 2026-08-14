@@ -12,10 +12,12 @@ public record CollectedProject(
         String title,
         String description,
         BigDecimal price,
-        Instant publishedAt
+        Instant publishedAt,
+        String sourceUrl,
+        String sourceCategory
 ) {
 
     public ProjectIngestRequest toIngestRequest() {
-        return new ProjectIngestRequest(platform, externalId, title, description, price, publishedAt);
+        return new ProjectIngestRequest(platform, externalId, title, description, price, publishedAt, sourceUrl, sourceCategory);
     }
 }

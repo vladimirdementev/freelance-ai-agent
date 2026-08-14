@@ -96,7 +96,9 @@ public class FlRuRssCollector implements ProjectCollector {
                         title,
                         description,
                         parseBudget(rawTitle),
-                        parsePublishedAt(text(item, "pubDate"))
+                        parsePublishedAt(text(item, "pubDate")),
+                        link,
+                        text(item, "category")
                 ));
             }
             return projects;
