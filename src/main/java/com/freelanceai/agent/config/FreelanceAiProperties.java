@@ -110,6 +110,7 @@ public class FreelanceAiProperties {
     public static class Collectors {
         private boolean enabled = false;
         private String kworkFeedUrl = "";
+        private String flRuFeedUrl = "https://www.fl.ru/rss/all.xml";
         private long pollIntervalMs = 1_800_000L;
 
         public boolean isEnabled() {
@@ -126,6 +127,14 @@ public class FreelanceAiProperties {
 
         public void setKworkFeedUrl(String kworkFeedUrl) {
             this.kworkFeedUrl = kworkFeedUrl;
+        }
+
+        public String getFlRuFeedUrl() {
+            return flRuFeedUrl;
+        }
+
+        public void setFlRuFeedUrl(String flRuFeedUrl) {
+            this.flRuFeedUrl = flRuFeedUrl;
         }
 
         public long getPollIntervalMs() {

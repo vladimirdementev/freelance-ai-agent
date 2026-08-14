@@ -34,4 +34,5 @@ freelance-ai:
   collectors:
     enabled: ${COLLECTORS_ENABLED:false}
     kwork-feed-url: ${KWORK_FEED_URL:}
+    fl-ru-feed-url: ${FL_RU_FEED_URL:https://www.fl.ru/rss/all.xml}
     poll-interval-ms: ${COLLECTORS_POLL_INTERVAL_MS:1800000}

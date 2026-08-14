@@ -30,6 +30,7 @@ services:
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
       COLLECTORS_ENABLED: ${COLLECTORS_ENABLED:-false}
       KWORK_FEED_URL: ${KWORK_FEED_URL:-}
+      FL_RU_FEED_URL: ${FL_RU_FEED_URL:-https://www.fl.ru/rss/all.xml}
     ports:
       - "8080:8080"
 

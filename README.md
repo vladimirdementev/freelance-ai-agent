@@ -4,7 +4,7 @@ MVP backend для поиска фриланс-заказов, их класси
 
 Первая версия специально сделана узкой. Она умеет:
 
-1. получать заказы из одного источника или парсерного слоя;
+1. получать заказы из FL.ru RSS или другого парсерного слоя;
 2. приводить заказ к единому формату;
 3. сохранять заказы в PostgreSQL;
 4. классифицировать заказ через OpenAI, если задан API-ключ;
@@ -17,7 +17,7 @@ MVP backend для поиска фриланс-заказов, их класси
 ## Архитектура
 
 ```text
-Kwork feed / parser
+FL.ru RSS / Kwork feed / parser
   -> /api/projects/ingest
   -> PostgreSQL
   -> AI / heuristic classifier
@@ -53,6 +53,7 @@ docker compose up --build
 | `MIN_NOTIFICATION_SCORE` | Минимальный score для Telegram-уведомления | `80` |
 | `COLLECTORS_ENABLED` | Включает scheduled collectors | `false` |
 | `KWORK_FEED_URL` | URL нормализованного JSON-фида Kwork | пусто |
+| `FL_RU_FEED_URL` | URL RSS-ленты FL.ru | `https://www.fl.ru/rss/all.xml` |
 
 ## API
 
@@ -77,9 +78,35 @@ curl -X POST http://localhost:8080/api/projects/ingest \
 curl 'http://localhost:8080/api/projects/top?limit=10'
 ```
 
-## Формат фида для collector
+## FL.ru collector
 
-Первый collector ожидает нормализованный JSON-фид. Это позволяет отдельно развивать реальный парсер площадки, не меняя downstream-часть: базу, AI-анализ, scoring и Telegram.
+Для FL.ru используется RSS-лента:
+
+```text
+https://www.fl.ru/rss/all.xml
+```
+
+Collector читает `title`, `link`, `description`, `pubDate`, извлекает ID проекта из ссылки вида `/projects/{id}/`, парсит бюджет из заголовка и передает заказ в общий pipeline:
+
+```text
+RSS item
+  -> CollectedProject
+  -> ProjectIngestRequest
+  -> PostgreSQL
+  -> classifier
+  -> scoring
+  -> Telegram
+```
+
+Чтобы включить scheduled collection:
+
+```bash
+COLLECTORS_ENABLED=true docker compose up --build
+```
+
+## Формат фида для Kwork collector
+
+Kwork collector пока ожидает нормализованный JSON-фид. Это позволяет отдельно развивать реальный парсер площадки, не меняя downstream-часть: базу, AI-анализ, scoring и Telegram.
 
 ```json
 {
