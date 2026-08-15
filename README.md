@@ -12,7 +12,8 @@ MVP backend для поиска фриланс-заказов, их класси
 6. рассчитывать score заказа;
 7. отправлять Telegram-уведомление, если заказ проходит заданный порог;
 8. не отправлять повторные уведомления по уже уведомленным заказам;
-9. разбирать выбранный заказ в требования, вопросы, риски, план реализации и критерии приемки.
+9. разбирать выбранный заказ в требования, вопросы, риски, план реализации и критерии приемки;
+10. создавать execution workspace с markdown-файлами для дальнейшей реализации заказа.
 
 В MVP пока нет автоматической отправки откликов, CRM, мобильного приложения и AI coding agent. Сначала нужно проверить, что система стабильно находит выгодные заказы.
 
@@ -56,6 +57,7 @@ docker compose up --build
 | `COLLECTORS_ENABLED` | Включает scheduled collectors | `false` |
 | `KWORK_FEED_URL` | URL нормализованного JSON-фида Kwork | пусто |
 | `FL_RU_FEED_URL` | URL RSS-ленты FL.ru | `https://www.fl.ru/rss/all.xml` |
+| `WORKSPACES_ROOT` | Папка для execution workspaces | `workspaces` |
 
 ## API
 
@@ -128,6 +130,41 @@ curl http://localhost:8080/api/projects/1/task-analysis/latest
 }
 ```
 
+### Создать execution workspace для заказа
+
+```bash
+curl -X POST http://localhost:8080/api/projects/1/workspace
+```
+
+Если для заказа ещё нет task analysis, система сначала создаст его автоматически.
+
+Ответ:
+
+```json
+{
+  "id": 3,
+  "projectId": 1,
+  "taskAnalysisId": 10,
+  "path": "/app/workspaces/fl-ru-5517886",
+  "files": [
+    "task.md",
+    "requirements.md",
+    "questions.md",
+    "risks.md",
+    "implementation-plan.md",
+    "acceptance-criteria.md",
+    "README.md"
+  ],
+  "createdAt": "2026-08-14T12:10:00Z"
+}
+```
+
+Получить последний созданный workspace:
+
+```bash
+curl http://localhost:8080/api/projects/1/workspace/latest
+```
+
 ### Запустить collectors вручную
 
 ```bash
@@ -185,6 +222,36 @@ Task analysis — это первый шаг к автоматическому �
 - критерии приемки.
 
 Если задан `OPENAI_API_KEY`, анализ делает OpenAI. Если ключ не задан или OpenAI вернул ошибку, используется локальный heuristic analyzer.
+
+## Execution workspace
+
+Execution workspace — это папка с подготовленным пакетом задачи для реализации.
+
+Структура:
+
+```text
+workspaces/
+  fl-ru-5517886/
+    task.md
+    requirements.md
+    questions.md
+    risks.md
+    implementation-plan.md
+    acceptance-criteria.md
+    README.md
+```
+
+Назначение файлов:
+
+- `task.md` — исходный заказ, ссылка, цена, score и detected metadata;
+- `requirements.md` — требования;
+- `questions.md` — вопросы, которые нужно уточнить перед работой;
+- `risks.md` — риски;
+- `implementation-plan.md` — план реализации;
+- `acceptance-criteria.md` — критерии готовности;
+- `README.md` — инструкция по использованию workspace.
+
+Следующий шаг после этого — подключить coding agent, который будет читать workspace и создавать реализацию в отдельной папке или репозитории.
 
 ## Формат фида для Kwork collector
 

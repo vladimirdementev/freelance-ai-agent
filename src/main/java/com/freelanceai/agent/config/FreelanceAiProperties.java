@@ -11,6 +11,7 @@ public class FreelanceAiProperties {
     private Scoring scoring = new Scoring();
     private Telegram telegram = new Telegram();
     private Collectors collectors = new Collectors();
+    private Workspaces workspaces = new Workspaces();
 
     public Ai getAi() {
         return ai;
@@ -42,6 +43,14 @@ public class FreelanceAiProperties {
 
     public void setCollectors(Collectors collectors) {
         this.collectors = collectors;
+    }
+
+    public Workspaces getWorkspaces() {
+        return workspaces;
+    }
+
+    public void setWorkspaces(Workspaces workspaces) {
+        this.workspaces = workspaces;
     }
 
     public static class Ai {
@@ -143,6 +152,18 @@ public class FreelanceAiProperties {
 
         public void setPollIntervalMs(long pollIntervalMs) {
             this.pollIntervalMs = pollIntervalMs;
+        }
+    }
+
+    public static class Workspaces {
+        private String rootPath = "workspaces";
+
+        public String getRootPath() {
+            return rootPath;
+        }
+
+        public void setRootPath(String rootPath) {
+            this.rootPath = rootPath;
         }
     }
 }

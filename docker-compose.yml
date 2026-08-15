@@ -31,8 +31,11 @@ services:
       COLLECTORS_ENABLED: ${COLLECTORS_ENABLED:-false}
       KWORK_FEED_URL: ${KWORK_FEED_URL:-}
       FL_RU_FEED_URL: ${FL_RU_FEED_URL:-https://www.fl.ru/rss/all.xml}
+      WORKSPACES_ROOT: ${WORKSPACES_ROOT:-workspaces}
     ports:
       - "8080:8080"
+    volumes:
+      - ./workspaces:/app/workspaces
 
 volumes:
   postgres-data:
