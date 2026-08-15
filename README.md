@@ -13,7 +13,8 @@ MVP backend для поиска фриланс-заказов, их класси
 7. отправлять Telegram-уведомление, если заказ проходит заданный порог;
 8. не отправлять повторные уведомления по уже уведомленным заказам;
 9. разбирать выбранный заказ в требования, вопросы, риски, план реализации и критерии приемки;
-10. создавать execution workspace с markdown-файлами для дальнейшей реализации заказа.
+10. создавать execution workspace с markdown-файлами для дальнейшей реализации заказа;
+11. создавать execution run и prompt для coding agent.
 
 В MVP пока нет автоматической отправки откликов, CRM, мобильного приложения и AI coding agent. Сначала нужно проверить, что система стабильно находит выгодные заказы.
 
@@ -165,6 +166,38 @@ curl -X POST http://localhost:8080/api/projects/1/workspace
 curl http://localhost:8080/api/projects/1/workspace/latest
 ```
 
+### Создать execution run для coding agent
+
+```bash
+curl -X POST http://localhost:8080/api/projects/1/execution-runs
+```
+
+Если workspace ещё нет, система создаст его автоматически.
+
+Ответ:
+
+```json
+{
+  "id": 5,
+  "projectId": 1,
+  "workspaceId": 3,
+  "status": "READY_FOR_AGENT",
+  "promptPath": "/app/workspaces/fl-ru-5517886/execution-prompt.md",
+  "logsPath": "/app/workspaces/fl-ru-5517886/execution.log",
+  "resultPath": "/app/workspaces/fl-ru-5517886/implementation",
+  "summary": "Execution prompt is ready for a coding agent.",
+  "createdAt": "2026-08-15T10:20:00Z",
+  "startedAt": null,
+  "finishedAt": null
+}
+```
+
+Получить последний execution run:
+
+```bash
+curl http://localhost:8080/api/projects/1/execution-runs/latest
+```
+
 ### Запустить collectors вручную
 
 ```bash
@@ -238,6 +271,9 @@ workspaces/
     risks.md
     implementation-plan.md
     acceptance-criteria.md
+    execution-prompt.md
+    execution.log
+    implementation/
     README.md
 ```
 
@@ -249,6 +285,8 @@ workspaces/
 - `risks.md` — риски;
 - `implementation-plan.md` — план реализации;
 - `acceptance-criteria.md` — критерии готовности;
+- `execution-prompt.md` — инструкция для coding agent;
+- `implementation/` — папка, куда coding agent должен класть реализацию;
 - `README.md` — инструкция по использованию workspace.
 
 Следующий шаг после этого — подключить coding agent, который будет читать workspace и создавать реализацию в отдельной папке или репозитории.
