@@ -21,6 +21,11 @@ public class ExecutionRunController {
         return executionRunService.createRun(projectId);
     }
 
+    @PostMapping("/{runId}/start")
+    public ExecutionRunResponse startRun(@PathVariable Long projectId, @PathVariable Long runId) {
+        return executionRunService.startRun(projectId, runId);
+    }
+
     @GetMapping("/latest")
     public ExecutionRunResponse latest(@PathVariable Long projectId) {
         return executionRunService.latest(projectId);

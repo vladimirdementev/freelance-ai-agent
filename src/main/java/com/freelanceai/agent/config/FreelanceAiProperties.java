@@ -12,6 +12,7 @@ public class FreelanceAiProperties {
     private Telegram telegram = new Telegram();
     private Collectors collectors = new Collectors();
     private Workspaces workspaces = new Workspaces();
+    private Execution execution = new Execution();
 
     public Ai getAi() {
         return ai;
@@ -51,6 +52,14 @@ public class FreelanceAiProperties {
 
     public void setWorkspaces(Workspaces workspaces) {
         this.workspaces = workspaces;
+    }
+
+    public Execution getExecution() {
+        return execution;
+    }
+
+    public void setExecution(Execution execution) {
+        this.execution = execution;
     }
 
     public static class Ai {
@@ -164,6 +173,27 @@ public class FreelanceAiProperties {
 
         public void setRootPath(String rootPath) {
             this.rootPath = rootPath;
+        }
+    }
+
+    public static class Execution {
+        private String agentCommand = "";
+        private long timeoutSeconds = 1_800L;
+
+        public String getAgentCommand() {
+            return agentCommand;
+        }
+
+        public void setAgentCommand(String agentCommand) {
+            this.agentCommand = agentCommand;
+        }
+
+        public long getTimeoutSeconds() {
+            return timeoutSeconds;
+        }
+
+        public void setTimeoutSeconds(long timeoutSeconds) {
+            this.timeoutSeconds = timeoutSeconds;
         }
     }
 }

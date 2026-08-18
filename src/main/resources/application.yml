@@ -38,3 +38,6 @@ freelance-ai:
     poll-interval-ms: ${COLLECTORS_POLL_INTERVAL_MS:1800000}
   workspaces:
     root-path: ${WORKSPACES_ROOT:workspaces}
+  execution:
+    agent-command: ${EXECUTION_AGENT_COMMAND:}
+    timeout-seconds: ${EXECUTION_TIMEOUT_SECONDS:1800}

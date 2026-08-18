@@ -32,6 +32,8 @@ services:
       KWORK_FEED_URL: ${KWORK_FEED_URL:-}
       FL_RU_FEED_URL: ${FL_RU_FEED_URL:-https://www.fl.ru/rss/all.xml}
       WORKSPACES_ROOT: ${WORKSPACES_ROOT:-workspaces}
+      EXECUTION_AGENT_COMMAND: ${EXECUTION_AGENT_COMMAND:-}
+      EXECUTION_TIMEOUT_SECONDS: ${EXECUTION_TIMEOUT_SECONDS:-1800}
     ports:
       - "8080:8080"
     volumes:

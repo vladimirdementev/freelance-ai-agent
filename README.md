@@ -59,6 +59,8 @@ docker compose up --build
 | `KWORK_FEED_URL` | URL нормализованного JSON-фида Kwork | пусто |
 | `FL_RU_FEED_URL` | URL RSS-ленты FL.ru | `https://www.fl.ru/rss/all.xml` |
 | `WORKSPACES_ROOT` | Папка для execution workspaces | `workspaces` |
+| `EXECUTION_AGENT_COMMAND` | Команда, которую worker запускает для выполнения workspace | пусто |
+| `EXECUTION_TIMEOUT_SECONDS` | Timeout запуска execution agent | `1800` |
 
 ## API
 
@@ -198,6 +200,14 @@ curl -X POST http://localhost:8080/api/projects/1/execution-runs
 curl http://localhost:8080/api/projects/1/execution-runs/latest
 ```
 
+Запустить execution run:
+
+```bash
+curl -X POST http://localhost:8080/api/projects/1/execution-runs/5/start
+```
+
+Запуск работает только если задана переменная `EXECUTION_AGENT_COMMAND`. Команда берется из конфигурации приложения, а не из API.
+
 ### Запустить collectors вручную
 
 ```bash
@@ -290,6 +300,34 @@ workspaces/
 - `README.md` — инструкция по использованию workspace.
 
 Следующий шаг после этого — подключить coding agent, который будет читать workspace и создавать реализацию в отдельной папке или репозитории.
+
+## Execution agent runner
+
+Execution runner запускает настроенную команду в папке workspace.
+
+Пример конфигурации:
+
+```bash
+EXECUTION_AGENT_COMMAND='your-agent-command --prompt "$EXECUTION_PROMPT_PATH" --output "$EXECUTION_RESULT_PATH"'
+```
+
+Процесс получает переменные окружения:
+
+| Переменная | Значение |
+| --- | --- |
+| `WORKSPACE_PATH` | Путь к workspace |
+| `EXECUTION_PROMPT_PATH` | Путь к `execution-prompt.md` |
+| `EXECUTION_RESULT_PATH` | Путь к папке `implementation/` |
+| `EXECUTION_LOG_PATH` | Путь к `execution.log` |
+
+Статусы run:
+
+- `READY_FOR_AGENT` — prompt готов, агент ещё не запускался;
+- `RUNNING` — команда агента запущена;
+- `SUCCEEDED` — команда завершилась с exit code `0`;
+- `FAILED` — команда завершилась с ошибкой, timeout или не смогла стартовать.
+
+По умолчанию `EXECUTION_AGENT_COMMAND` пустой, поэтому автоматический запуск выключен. Это сделано специально: сначала нужно явно выбрать безопасную команду агента.
 
 ## Формат фида для Kwork collector
 

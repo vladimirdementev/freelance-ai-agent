@@ -1,10 +1,13 @@
 package com.freelanceai.agent.execution;
 
 import java.nio.file.Path;
+import java.time.Instant;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import com.freelanceai.agent.config.FreelanceAiProperties;
 import com.freelanceai.agent.project.FreelanceProject;
 import com.freelanceai.agent.project.FreelanceProjectRepository;
 import com.freelanceai.agent.workspace.ProjectWorkspace;
@@ -20,19 +23,25 @@ public class ExecutionRunService {
     private final ProjectWorkspaceService workspaceService;
     private final ExecutionRunRepository executionRunRepository;
     private final ExecutionPromptWriter promptWriter;
+    private final ExecutionRunWorker executionRunWorker;
+    private final FreelanceAiProperties properties;
 
     public ExecutionRunService(
             FreelanceProjectRepository projectRepository,
             ProjectWorkspaceRepository workspaceRepository,
             ProjectWorkspaceService workspaceService,
             ExecutionRunRepository executionRunRepository,
-            ExecutionPromptWriter promptWriter
+            ExecutionPromptWriter promptWriter,
+            ExecutionRunWorker executionRunWorker,
+            FreelanceAiProperties properties
     ) {
         this.projectRepository = projectRepository;
         this.workspaceRepository = workspaceRepository;
         this.workspaceService = workspaceService;
         this.executionRunRepository = executionRunRepository;
         this.promptWriter = promptWriter;
+        this.executionRunWorker = executionRunWorker;
+        this.properties = properties;
     }
 
     public ExecutionRunResponse createRun(Long projectId) {
@@ -55,6 +64,25 @@ public class ExecutionRunService {
         run.setSummary("Execution prompt is ready for a coding agent.");
 
         return toResponse(executionRunRepository.save(run));
+    }
+
+    public ExecutionRunResponse startRun(Long projectId, Long runId) {
+        if (!StringUtils.hasText(properties.getExecution().getAgentCommand())) {
+            throw new IllegalStateException("Execution agent command is not configured.");
+        }
+
+        ExecutionRun run = executionRunRepository.findByIdAndProjectId(runId, projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Execution run not found: " + runId));
+        if (run.getStatus() != ExecutionRunStatus.READY_FOR_AGENT) {
+            throw new IllegalStateException("Execution run is not ready for agent: " + run.getStatus());
+        }
+
+        run.setStatus(ExecutionRunStatus.RUNNING);
+        run.setStartedAt(Instant.now());
+        run.setSummary("Execution agent started.");
+        ExecutionRun saved = executionRunRepository.save(run);
+        executionRunWorker.execute(saved.getId());
+        return toResponse(saved);
     }
 
     @Transactional(readOnly = true)
