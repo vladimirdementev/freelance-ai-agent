@@ -1,6 +1,7 @@
 package com.freelanceai.agent.config;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -126,9 +127,16 @@ public class FreelanceAiProperties {
     }
 
     public static class Collectors {
+        private static final List<String> DEFAULT_WORKZILLA_SEED_URLS = List.of(
+                "https://work-zilla.com/freelance-jobs/development-and-it",
+                "https://work-zilla.com/freelance-jobs/development-and-it/api-integrations",
+                "https://work-zilla.com/freelance-jobs/development-and-it/chatbot-development/development-of-telegram-bot-parser",
+                "https://work-zilla.com/freelance-jobs/development-and-it/parsing/development-of-telegram-parser"
+        );
+
         private boolean enabled = false;
         private String kworkFeedUrl = "";
-        private String flRuFeedUrl = "https://www.fl.ru/rss/all.xml";
+        private List<String> workzillaSeedUrls = DEFAULT_WORKZILLA_SEED_URLS;
         private long pollIntervalMs = 1_800_000L;
 
         public boolean isEnabled() {
@@ -147,12 +155,12 @@ public class FreelanceAiProperties {
             this.kworkFeedUrl = kworkFeedUrl;
         }
 
-        public String getFlRuFeedUrl() {
-            return flRuFeedUrl;
+        public List<String> getWorkzillaSeedUrls() {
+            return workzillaSeedUrls;
         }
 
-        public void setFlRuFeedUrl(String flRuFeedUrl) {
-            this.flRuFeedUrl = flRuFeedUrl;
+        public void setWorkzillaSeedUrls(List<String> workzillaSeedUrls) {
+            this.workzillaSeedUrls = workzillaSeedUrls;
         }
 
         public long getPollIntervalMs() {

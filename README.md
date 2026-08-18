@@ -4,7 +4,7 @@ MVP backend для поиска фриланс-заказов, их класси
 
 Первая версия специально сделана узкой. Она умеет:
 
-1. получать заказы из FL.ru RSS или другого парсерного слоя;
+1. получать данные из публичных страниц Workzilla или другого парсерного слоя;
 2. приводить заказ к единому формату;
 3. сохранять заказы в PostgreSQL;
 4. классифицировать заказ через OpenAI, если задан API-ключ;
@@ -21,7 +21,7 @@ MVP backend для поиска фриланс-заказов, их класси
 ## Архитектура
 
 ```text
-FL.ru RSS / Kwork feed / parser
+Workzilla public pages / Kwork feed / parser
   -> /api/projects/ingest
   -> PostgreSQL
   -> AI / heuristic classifier
@@ -57,7 +57,7 @@ docker compose up --build
 | `MIN_NOTIFICATION_SCORE` | Минимальный score для Telegram-уведомления | `80` |
 | `COLLECTORS_ENABLED` | Включает scheduled collectors | `false` |
 | `KWORK_FEED_URL` | URL нормализованного JSON-фида Kwork | пусто |
-| `FL_RU_FEED_URL` | URL RSS-ленты FL.ru | `https://www.fl.ru/rss/all.xml` |
+| `WORKZILLA_SEED_URLS` | Список публичных страниц Workzilla для collector | IT/category URLs |
 | `WORKSPACES_ROOT` | Папка для execution workspaces | `workspaces` |
 | `EXECUTION_AGENT_COMMAND` | Команда, которую worker запускает для выполнения workspace | пусто |
 | `EXECUTION_TIMEOUT_SECONDS` | Timeout запуска execution agent | `1800` |
@@ -148,7 +148,7 @@ curl -X POST http://localhost:8080/api/projects/1/workspace
   "id": 3,
   "projectId": 1,
   "taskAnalysisId": 10,
-  "path": "/app/workspaces/fl-ru-5517886",
+  "path": "/app/workspaces/workzilla-freelance-jobs-development-and-it-api-integrations",
   "files": [
     "task.md",
     "requirements.md",
@@ -184,9 +184,9 @@ curl -X POST http://localhost:8080/api/projects/1/execution-runs
   "projectId": 1,
   "workspaceId": 3,
   "status": "READY_FOR_AGENT",
-  "promptPath": "/app/workspaces/fl-ru-5517886/execution-prompt.md",
-  "logsPath": "/app/workspaces/fl-ru-5517886/execution.log",
-  "resultPath": "/app/workspaces/fl-ru-5517886/implementation",
+  "promptPath": "/app/workspaces/workzilla-freelance-jobs-development-and-it-api-integrations/execution-prompt.md",
+  "logsPath": "/app/workspaces/workzilla-freelance-jobs-development-and-it-api-integrations/execution.log",
+  "resultPath": "/app/workspaces/workzilla-freelance-jobs-development-and-it-api-integrations/implementation",
   "summary": "Execution prompt is ready for a coding agent.",
   "createdAt": "2026-08-15T10:20:00Z",
   "startedAt": null,
@@ -224,18 +224,21 @@ curl -X POST http://localhost:8080/api/collectors/run
 }
 ```
 
-## FL.ru collector
+## Workzilla collector
 
-Для FL.ru используется RSS-лента:
+У Workzilla не обнаружен публичный RSS/API с актуальными заданиями без авторизации. Поэтому текущий collector использует список публичных страниц Workzilla как seed URLs:
 
 ```text
-https://www.fl.ru/rss/all.xml
+https://work-zilla.com/freelance-jobs/development-and-it
+https://work-zilla.com/freelance-jobs/development-and-it/api-integrations
+https://work-zilla.com/freelance-jobs/development-and-it/chatbot-development/development-of-telegram-bot-parser
+https://work-zilla.com/freelance-jobs/development-and-it/parsing/development-of-telegram-parser
 ```
 
-Collector читает `title`, `link`, `description`, `pubDate`, извлекает ID проекта из ссылки вида `/projects/{id}/`, парсит бюджет из заголовка и передает заказ в общий pipeline:
+Collector читает HTML страницы, извлекает `h1`/`title`, meta description, source URL и source category, затем передает запись в общий pipeline:
 
 ```text
-RSS item
+Workzilla public page
   -> CollectedProject
   -> ProjectIngestRequest
   -> PostgreSQL
@@ -251,6 +254,8 @@ COLLECTORS_ENABLED=true docker compose up --build
 ```
 
 Повторные уведомления не отправляются: после успешной отправки Telegram-сообщения у заказа заполняется `notifiedAt`.
+
+Важно: текущий Workzilla collector — это публичный адаптер без авторизации. Для реальных актуальных заданий Workzilla может потребоваться авторизованный API/mobile adapter или отдельный экспорт задач.
 
 ## AI task analysis
 
@@ -274,7 +279,7 @@ Execution workspace — это папка с подготовленным пак
 
 ```text
 workspaces/
-  fl-ru-5517886/
+  workzilla-freelance-jobs-development-and-it-api-integrations/
     task.md
     requirements.md
     questions.md

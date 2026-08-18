@@ -34,7 +34,7 @@ freelance-ai:
   collectors:
     enabled: ${COLLECTORS_ENABLED:false}
     kwork-feed-url: ${KWORK_FEED_URL:}
-    fl-ru-feed-url: ${FL_RU_FEED_URL:https://www.fl.ru/rss/all.xml}
+    workzilla-seed-urls: ${WORKZILLA_SEED_URLS:https://work-zilla.com/freelance-jobs/development-and-it,https://work-zilla.com/freelance-jobs/development-and-it/api-integrations,https://work-zilla.com/freelance-jobs/development-and-it/chatbot-development/development-of-telegram-bot-parser,https://work-zilla.com/freelance-jobs/development-and-it/parsing/development-of-telegram-parser}
     poll-interval-ms: ${COLLECTORS_POLL_INTERVAL_MS:1800000}
   workspaces:
     root-path: ${WORKSPACES_ROOT:workspaces}

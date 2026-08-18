@@ -42,18 +42,18 @@ class ProjectIngestionServiceTest {
     @Test
     void doesNotSendDuplicateTelegramNotificationForAlreadyNotifiedProject() {
         FreelanceProject existing = new FreelanceProject();
-        existing.setPlatform(ProjectPlatform.FL_RU);
-        existing.setExternalId("5517886");
+        existing.setPlatform(ProjectPlatform.WORKZILLA);
+        existing.setExternalId("freelance-jobs-development-and-it-api-integrations");
         existing.setNotifiedAt(Instant.parse("2026-08-14T11:50:03Z"));
 
         ProjectIngestRequest request = new ProjectIngestRequest(
-                ProjectPlatform.FL_RU,
-                "5517886",
+                ProjectPlatform.WORKZILLA,
+                "freelance-jobs-development-and-it-api-integrations",
                 "Telegram bot",
                 "Need a Telegram bot",
                 BigDecimal.valueOf(10_000),
                 Instant.parse("2026-08-14T11:40:00Z"),
-                "https://www.fl.ru/projects/5517886/test.html",
+                "https://work-zilla.com/freelance-jobs/development-and-it/api-integrations",
                 "Разработка / Чат-боты"
         );
         ProjectAnalysis analysis = new ProjectAnalysis(
@@ -66,7 +66,10 @@ class ProjectIngestionServiceTest {
                 20
         );
 
-        when(projectRepository.findByPlatformAndExternalId(ProjectPlatform.FL_RU, "5517886")).thenReturn(Optional.of(existing));
+        when(projectRepository.findByPlatformAndExternalId(
+                ProjectPlatform.WORKZILLA,
+                "freelance-jobs-development-and-it-api-integrations"
+        )).thenReturn(Optional.of(existing));
         when(analysisService.analyze(request.title(), request.description(), request.price())).thenReturn(analysis);
         when(scoringService.score(analysis, request.price())).thenReturn(BigDecimal.valueOf(90));
         when(projectRepository.save(existing)).thenReturn(existing);
