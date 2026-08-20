@@ -30,7 +30,7 @@ services:
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
       COLLECTORS_ENABLED: ${COLLECTORS_ENABLED:-false}
       KWORK_FEED_URL: ${KWORK_FEED_URL:-}
-      WORKZILLA_SEED_URLS: ${WORKZILLA_SEED_URLS:-https://work-zilla.com/freelance-jobs/development-and-it,https://work-zilla.com/freelance-jobs/development-and-it/api-integrations,https://work-zilla.com/freelance-jobs/development-and-it/chatbot-development/development-of-telegram-bot-parser,https://work-zilla.com/freelance-jobs/development-and-it/parsing/development-of-telegram-parser}
+      FREELANCER_SEED_URLS: ${FREELANCER_SEED_URLS:-https://www.freelancer.com/jobs/}
       WORKSPACES_ROOT: ${WORKSPACES_ROOT:-workspaces}
       EXECUTION_AGENT_COMMAND: ${EXECUTION_AGENT_COMMAND:-}
       EXECUTION_TIMEOUT_SECONDS: ${EXECUTION_TIMEOUT_SECONDS:-1800}

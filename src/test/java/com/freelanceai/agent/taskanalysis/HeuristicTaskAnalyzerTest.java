@@ -19,8 +19,8 @@ class HeuristicTaskAnalyzerTest {
     @Test
     void createsExecutableTaskAnalysisForTelegramBotProject() {
         FreelanceProject project = new FreelanceProject();
-        project.setPlatform(ProjectPlatform.WORKZILLA);
-        project.setExternalId("freelance-jobs-development-and-it-chatbot-development");
+        project.setPlatform(ProjectPlatform.FREELANCER);
+        project.setExternalId("projects-chatbot-development-telegram-bot-with-payments");
         project.setTitle("Telegram bot with payments");
         project.setDescription("Need Telegram bot with catalog, payment API and admin notifications.");
         project.setCategory(ProjectCategory.TELEGRAM_BOT);

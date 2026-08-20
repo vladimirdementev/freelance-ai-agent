@@ -127,16 +127,13 @@ public class FreelanceAiProperties {
     }
 
     public static class Collectors {
-        private static final List<String> DEFAULT_WORKZILLA_SEED_URLS = List.of(
-                "https://work-zilla.com/freelance-jobs/development-and-it",
-                "https://work-zilla.com/freelance-jobs/development-and-it/api-integrations",
-                "https://work-zilla.com/freelance-jobs/development-and-it/chatbot-development/development-of-telegram-bot-parser",
-                "https://work-zilla.com/freelance-jobs/development-and-it/parsing/development-of-telegram-parser"
+        private static final List<String> DEFAULT_FREELANCER_SEED_URLS = List.of(
+                "https://www.freelancer.com/jobs/"
         );
 
         private boolean enabled = false;
         private String kworkFeedUrl = "";
-        private List<String> workzillaSeedUrls = DEFAULT_WORKZILLA_SEED_URLS;
+        private List<String> freelancerSeedUrls = DEFAULT_FREELANCER_SEED_URLS;
         private long pollIntervalMs = 1_800_000L;
 
         public boolean isEnabled() {
@@ -155,12 +152,12 @@ public class FreelanceAiProperties {
             this.kworkFeedUrl = kworkFeedUrl;
         }
 
-        public List<String> getWorkzillaSeedUrls() {
-            return workzillaSeedUrls;
+        public List<String> getFreelancerSeedUrls() {
+            return freelancerSeedUrls;
         }
 
-        public void setWorkzillaSeedUrls(List<String> workzillaSeedUrls) {
-            this.workzillaSeedUrls = workzillaSeedUrls;
+        public void setFreelancerSeedUrls(List<String> freelancerSeedUrls) {
+            this.freelancerSeedUrls = freelancerSeedUrls;
         }
 
         public long getPollIntervalMs() {

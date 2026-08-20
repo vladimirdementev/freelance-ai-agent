@@ -28,11 +28,11 @@ class WorkspaceFileWriterTest {
     @Test
     void writesExecutionWorkspaceMarkdownFiles() throws Exception {
         FreelanceProject project = new FreelanceProject();
-        project.setPlatform(ProjectPlatform.WORKZILLA);
-        project.setExternalId("freelance-jobs-development-and-it-chatbot-development");
+        project.setPlatform(ProjectPlatform.FREELANCER);
+        project.setExternalId("projects-chatbot-development-telegram-bot-with-payments");
         project.setTitle("Telegram bot with payments");
         project.setDescription("Need a Telegram bot with payment API.");
-        project.setSourceUrl("https://work-zilla.com/freelance-jobs/development-and-it/chatbot-development");
+        project.setSourceUrl("https://www.freelancer.com/projects/chatbot-development/telegram-bot-with-payments");
         project.setSourceCategory("Разработка / Чат-боты");
         project.setPrice(BigDecimal.valueOf(18_000));
         project.setCategory(ProjectCategory.TELEGRAM_BOT);

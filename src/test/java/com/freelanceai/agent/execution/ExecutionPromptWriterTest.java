@@ -22,9 +22,9 @@ class ExecutionPromptWriterTest {
     @Test
     void writesExecutionPromptForCodingAgent() throws Exception {
         FreelanceProject project = new FreelanceProject();
-        project.setPlatform(ProjectPlatform.WORKZILLA);
-        project.setExternalId("freelance-jobs-development-and-it-api-integrations");
-        project.setSourceUrl("https://work-zilla.com/freelance-jobs/development-and-it/api-integrations");
+        project.setPlatform(ProjectPlatform.FREELANCER);
+        project.setExternalId("projects-api-integrations-telegram-bot");
+        project.setSourceUrl("https://www.freelancer.com/projects/api-integrations/telegram-bot");
 
         ProjectWorkspace workspace = new ProjectWorkspace();
         workspace.setPath(tempDir.toString());
